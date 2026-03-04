@@ -1,7 +1,8 @@
 import { streamText, convertToModelMessages } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-const openrouter = createOpenAI({
+const openrouter = createOpenAICompatible({
+  name: "openrouter",
   apiKey: process.env.OPENROUTER_API_KEY,
   baseURL: "https://openrouter.ai/api/v1",
 });
@@ -29,12 +30,12 @@ export async function POST(req: Request) {
 - After 5 questions, give an overall session summary with a score out of 10
 </rules>`;
 
- const result = streamText({
-  model: openrouter("openai/gpt-4o"),
-  system: systemPrompt,
-  messages: await convertToModelMessages(messages),
-  maxOutputTokens: 1000,
-});
+  const result = streamText({
+    model: openrouter("openai/gpt-4o"),
+    system: systemPrompt,
+    messages: await convertToModelMessages(messages),
+    maxOutputTokens: 1000,
+  });
 
   return result.toUIMessageStreamResponse();
 }
